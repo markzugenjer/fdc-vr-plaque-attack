@@ -24,6 +24,16 @@ import { store } from '../core/util.js';
 const BOARD_KEY = 'fdc.plaque.board';
 const COMBO_WINDOW = 1.6;
 
+// The "Lobby FDC" buttons only appear when the game was opened from the FDC VR lobby. In the
+// stand-alone Plaque Attack app there is no lobby to go back to.
+const FROM_LOBBY = (() => {
+  const q = new URLSearchParams(location.search).get('from') === 'lobby';
+  try { if (q) sessionStorage.setItem('fdc.plaque.from', 'lobby'); return sessionStorage.getItem('fdc.plaque.from') === 'lobby'; } catch { return q; }
+})();
+const LOBBY_URL = location.port === '5176'
+  ? `${location.protocol}//${location.hostname}:5173/?from=plaque`
+  : '/?from=plaque';
+
 const LINES = {
   welcome: 'Halo! Aku Gigi. Kita sedang ada di DALAM MULUT! Tekan MULAI untuk melindungi gigi.',
   intro1: 'Bakteri plak datang mau memakan gigi! Kamu yang harus melindungi mereka!',
@@ -93,6 +103,9 @@ export function createGame(app) {
   const bStart = makeButton(app, { label: 'MULAI!', sub: 'Lindungi gigi dari bakteri', tone: 'pink', w: 0.62, h: 0.17, onSelect: () => start() });
   bStart.position.set(0, FRONT.y - 0.6, FRONT.z + 0.02);
   group.add(bStart);
+  const bLobby = makeButton(app, { label: 'Lobby FDC', tone: 'light', w: 0.36, h: 0.1, onSelect: () => toLobby() });
+  bLobby.position.set(0, FRONT.y - 0.79, FRONT.z + 0.02);
+  group.add(bLobby);
   // result
   let result = null;
   const resultPanel = makePanel(1.7, 1.0, (c, W, H) => drawResult(c, W, H));
@@ -142,8 +155,11 @@ export function createGame(app) {
   bResume.position.set(-0.2, 1.42, -1.19);
   const bQuit = makeButton(app, { label: 'Keluar', tone: 'light', w: 0.34, h: 0.11, onSelect: () => { setPaused(false); toTitle(); } });
   bQuit.position.set(0.2, 1.42, -1.19);
-  group.add(bResume, bQuit);
-  bResume.visible = bQuit.visible = false;
+  const bLobby2 = makeButton(app, { label: 'Lobby FDC', tone: 'light', w: 0.34, h: 0.1, onSelect: () => { setPaused(false); toLobby(); } });
+  bLobby2.position.set(0, 1.29, -1.19);
+  group.add(bResume, bQuit, bLobby2);
+  bResume.visible = bQuit.visible = bLobby2.visible = false;
+  function toLobby() { app.openPage(LOBBY_URL); }
 
   // floating "+10" score pop-ups (a small pool of sprites)
   const pops = [];
@@ -290,10 +306,12 @@ export function createGame(app) {
     const e = state === 'end';
     title.mesh.visible = t;
     bStart.visible = t;
+    bLobby.visible = t && FROM_LOBBY;
     resultPanel.mesh.visible = e;
     bAgain.visible = bHome.visible = e;
     hud.mesh.visible = state === 'intro' || state === 'play';
     pausePanel.mesh.visible = bResume.visible = bQuit.visible = paused;
+    bLobby2.visible = paused && FROM_LOBBY;
     app.pointers.lasers = t || e || paused;
     weapons.arm((state === 'intro' || state === 'play') && !paused);
   }
