@@ -1,0 +1,32 @@
+/** FDC Plaque Attack colours: a bright, juicy mouth with FDC mint and pink on the panels. */
+export const P = {
+  // panels (shared UI)
+  mint: '#9ed9c2',
+  mintDeep: '#5fb89a',
+  mintDark: '#3f8f74',
+  mintSoft: '#dcf3ea',
+  pink: '#f6b9c9',
+  pinkDeep: '#e98aa4',
+  pinkSoft: '#fde8ee',
+  white: '#ffffff',
+  cream: '#fbf8f4',
+  wall: '#fdfbf8',
+  ink: '#2e2340',
+  muted: '#7b6b80',
+  gold: '#f7c95e',
+  red: '#e8676c',
+  metal: '#d9e2e7',
+  // the mouth
+  tongue: '#f2708f',
+  tongueDeep: '#d94f74',
+  gum: '#ff8fab',
+  palate: '#ff9db5',
+  throat: '#5a1030',
+  tooth: '#fffaf0',
+  hot: '#e8457a',
+  cyan: '#4fd8ff',
+  lime: '#8be04e',
+  purple: '#a46cf5',
+  orange: '#ff9f43',
+  candy: ['#ff5d8f', '#ffd23f', '#3fd2ff', '#9b5cff', '#5dff9f'],
+};
